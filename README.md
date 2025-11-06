@@ -78,15 +78,19 @@ Create a `.env` file in the root directory and use .env.example for it's configu
 
 ---
 
-## 🌍 API Endpoints (basic)
+## 🌍 API Endpoints
 
-| Method | Endpoint               | Description             |
-|--------|------------------------|-------------------------|
-| `GET`  | `/`                    | Root health check       |
-| `GET`  | `/health`              | Detailed health status  |
-| `POST` | `/api/v1/auth/login`   | Login                   |
-| `POST` | `/api/v1/auth/logout`  | Logout                  |
-| `POST` | `/api/v1/auth/refresh` | Refreshing access token |
+| Method   | Endpoint                          | Description                    |
+|----------|-----------------------------------|--------------------------------|
+| `GET`    | `/`                               | Root health check              |
+| `GET`    | `/health`                         | Detailed health status         |
+| `POST`   | `/api/v1/auth/login`              | Login                          |
+| `POST`   | `/api/v1/auth/logout`             | Logout                         |
+| `POST`   | `/api/v1/auth/refresh`            | Refreshing access token        |
+| `POST`   | `/api/v1/trucks/add`              | Create a truck                 |
+| `GET`    | `/api/v1/trucks?skip=0&limit=10 ` | Get truck list with pagination |
+| `PATCH`  | `/api/v1/trucks/{truck_id} `      | Update truck                   |
+| `DELETE` | `/api/v1/trucks/{truck_id} `      | Soft delete truck              |
 
 ---
 
