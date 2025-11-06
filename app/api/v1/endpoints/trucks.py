@@ -1,0 +1,8 @@
+"""
+Truck management endpoints
+"""
+from fastapi import APIRouter
+
+router = APIRouter()
+
+# TODO: Implement truck CRUD endpoints
