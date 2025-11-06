@@ -80,10 +80,13 @@ Create a `.env` file in the root directory and use .env.example for it's configu
 
 ## 🌍 API Endpoints (basic)
 
-| Method | Endpoint  | Description            |
-| ------ | --------- | ---------------------- |
-| `GET`  | `/`       | Root health check      |
-| `GET`  | `/health` | Detailed health status |
+| Method | Endpoint               | Description             |
+|--------|------------------------|-------------------------|
+| `GET`  | `/`                    | Root health check       |
+| `GET`  | `/health`              | Detailed health status  |
+| `POST` | `/api/v1/auth/login`   | Login                   |
+| `POST` | `/api/v1/auth/logout`  | Logout                  |
+| `POST` | `/api/v1/auth/refresh` | Refreshing access token |
 
 ---
 
@@ -101,6 +104,5 @@ Create a `.env` file in the root directory and use .env.example for it's configu
 
 * Truck maintenance scheduling
 * Driver and fleet management
-* Auth & role-based permissions
 
 
