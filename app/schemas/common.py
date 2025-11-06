@@ -52,24 +52,10 @@ class TimestampMixin(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
-
 
 class UUIDMixin(BaseModel):
     """Mixin for UUID primary key"""
     id: UUID
-
-    class Config:
-        from_attributes = True
-
-
-class StatusEnum:
-    """Common status enumerations"""
-    ACTIVE = "active"
-    INACTIVE = "inactive"
-    DELETED = "deleted"
-
 
 class IncidentStatusEnum:
     """Incident status enumerations"""

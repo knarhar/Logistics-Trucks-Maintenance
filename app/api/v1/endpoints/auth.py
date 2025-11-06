@@ -1,13 +1,11 @@
 import jwt
-from fastapi import APIRouter, Form, Depends
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Form
 
 from app.core.security import *
 from app.core.exceptions import *
-from app.core.config import settings
 from app.models.user import User
 
-router = APIRouter(tags=["auth"])
+router = APIRouter(tags=["Auth"])
 
 
 @router.post("/login")

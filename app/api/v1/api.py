@@ -4,5 +4,5 @@ from app.api.v1.endpoints import auth, trucks, mechanics
 api_router = APIRouter()
 
 api_router.include_router(auth.router, prefix="/auth")
-# api_router.include_router(trucks.router, prefix="/trucks", tags=["Trucks"])
-# api_router.include_router(mechanics.router, prefix="/mechanics", tags=["Mechanics"])
+api_router.include_router(trucks.router, prefix="/trucks")
+# api_router.include_router(mechanics.router, prefix="/mechanics")
