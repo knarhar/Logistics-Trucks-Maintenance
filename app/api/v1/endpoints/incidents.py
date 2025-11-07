@@ -4,7 +4,6 @@ Incident management endpoints
 import uuid
 from typing import List
 
-
 from fastapi import APIRouter, Depends, Form, UploadFile, File
 from sqlalchemy.orm import Session
 

@@ -112,6 +112,15 @@ Create a `.env` file in the root directory and use .env.example for it's configu
 | `PATCH`  | `/api/v1/mechanic/{mechanic_id} ` | Update mechanic                              |
 | `DELETE` | `/api/v1/mechanic/{mechanic_id} ` | Delete mechanic                              |
 
+### Incidents
+| Method   | Endpoint                                                | Description                                        |
+|----------|---------------------------------------------------------|----------------------------------------------------|
+| `POST`   | `/api/v1/incidents/add`                                 | Create an incident                                 |
+| `GET`    | `/api/v1/incidents?status=&truck_id=&mechanic_id= `     | Get incidents list with optional filtration params |
+| `PATCH`  | `/api/v1/incidents/{incident_id} `                      | Update incident                                    |
+| `DELETE` | `/api/v1/incidents/{incident_id} `                      | Delete mechanic                                    |
+| `PATCH`  | `/api/v1/incidents/{incident_id}/assign/{mechanic_id} ` | Assign incident to specified mechanic              |
+
 ---
 
 ## 🛠️ Tech Stack
