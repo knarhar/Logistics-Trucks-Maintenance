@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 from typing import Generic, TypeVar, List, Optional
 from datetime import datetime
 from uuid import UUID
+import enum
 
 # Generic type for paginated responses
 T = TypeVar('T')
@@ -65,7 +66,7 @@ class IncidentStatusEnum:
     ON_HOLD = "on_hold"
 
 
-class IssueTypeEnum:
+class IssueTypeEnum(str, enum.Enum):
     """Issue type enumerations"""
     ENGINE = "engine"
     TRANSMISSION = "transmission"
@@ -73,17 +74,14 @@ class IssueTypeEnum:
     ELECTRICAL = "electrical"
     TIRES = "tires"
     BODY = "body"
-    OTHER = "other"
 
 
-class SpecializationEnum:
-    """Mechanic specialization enumerations"""
-    ENGINE = "engine"
-    TRANSMISSION = "transmission"
-    BRAKES = "brakes"
+class ExpertiseEnum(str, enum.Enum):
+    ENGINE = 'engine'
+    TRANSMISSION = 'transmission'
+    TIRES = 'tires'
     ELECTRICAL = "electrical"
-    TIRES = "tires"
-    GENERAL = "general"
+    SUSPENSION = "suspension"
 
 
 class PriorityEnum:
