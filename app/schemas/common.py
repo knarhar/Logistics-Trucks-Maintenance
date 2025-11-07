@@ -58,7 +58,7 @@ class UUIDMixin(BaseModel):
     """Mixin for UUID primary key"""
     id: UUID
 
-class IncidentStatusEnum:
+class IncidentStatusEnum(str, enum.Enum):
     """Incident status enumerations"""
     PLANNED = "planned"
     IN_PROGRESS = "in_progress"

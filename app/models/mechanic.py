@@ -1,19 +1,12 @@
 """
 Mechanic model
 """
-import enum, uuid
+import uuid
 from datetime import datetime
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import Column, Integer, String, DateTime, Enum
 from app.db.base import Base
-
-
-class ExpertiseEnum(str, enum.Enum):
-    ENGINE = 'engine'
-    TRANSMISSION = 'transmission'
-    TIRES = 'tires'
-    ELECTRICAL = "electrical"
-    SUSPENSION = "suspension"
+from app.schemas.common import ExpertiseEnum
 
 
 class Mechanic(Base):

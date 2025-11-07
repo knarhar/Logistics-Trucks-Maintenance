@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     MAX_PAGE_SIZE: int = 100
 
     # File upload
-    ALLOWED_IMAGE_TYPES: list = dataclasses.field(default_factory=lambda: ["jpg", "jpeg", "png"])
+    ALLOWED_IMAGE_TYPES: list = dataclasses.field(default_factory=lambda: ["image/jpg", "image/jpeg", "image/png"])
     MAX_UPLOAD_SIZE: int = 5 * 1024 * 1024  # 5MB
 
     class Config:
