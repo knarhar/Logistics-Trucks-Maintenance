@@ -1,14 +1,11 @@
 """
 Mechanic management endpoints
 """
-from uuid import UUID
-
 from fastapi import APIRouter, Query, Depends
 from sqlalchemy.orm import Session
 
 from app.core.security import get_db, get_current_user
 from app.models.user import User
-from app.models.mechanic import Mechanic
 from app.schemas.common import SuccessResponse
 from app.schemas.mechanic import *
 from app.services.mechanic import mechanic_service

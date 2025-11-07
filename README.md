@@ -78,19 +78,39 @@ Create a `.env` file in the root directory and use .env.example for it's configu
 
 ---
 
-## 🌍 API Endpoints
+## 🌍 API Endpoints 
+
+### Basic
 
 | Method   | Endpoint                          | Description                    |
 |----------|-----------------------------------|--------------------------------|
 | `GET`    | `/`                               | Root health check              |
 | `GET`    | `/health`                         | Detailed health status         |
+
+### Authentication
+| Method   | Endpoint                          | Description                    |
+|----------|-----------------------------------|--------------------------------|
+|          |                                   |                                |
 | `POST`   | `/api/v1/auth/login`              | Login                          |
 | `POST`   | `/api/v1/auth/logout`             | Logout                         |
 | `POST`   | `/api/v1/auth/refresh`            | Refreshing access token        |
+
+
+### Trucks
+| Method   | Endpoint                          | Description                    |
+|----------|-----------------------------------|--------------------------------|
 | `POST`   | `/api/v1/trucks/add`              | Create a truck                 |
 | `GET`    | `/api/v1/trucks?skip=0&limit=10 ` | Get truck list with pagination |
 | `PATCH`  | `/api/v1/trucks/{truck_id} `      | Update truck                   |
 | `DELETE` | `/api/v1/trucks/{truck_id} `      | Soft delete truck              |
+
+### Mechanics
+| Method   | Endpoint                          | Description                                  |
+|----------|-----------------------------------|----------------------------------------------|
+| `POST`   | `/api/v1/mechanics/add`           | Create a mechanic                            |
+| `GET`    | `/api/v1/mechanics?search= `      | Get mechanic list with partial name matching |
+| `PATCH`  | `/api/v1/mechanic/{mechanic_id} ` | Update mechanic                              |
+| `DELETE` | `/api/v1/mechanic/{mechanic_id} ` | Delete mechanic                              |
 
 ---
 
