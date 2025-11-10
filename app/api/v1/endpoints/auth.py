@@ -1,4 +1,3 @@
-import jwt
 from fastapi import APIRouter, Form
 
 from app.core.security import *

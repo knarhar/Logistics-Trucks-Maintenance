@@ -26,7 +26,11 @@ class Settings(BaseSettings):
     CLOUDINARY_API_SECRET: str
     CLOUDINARY_FOLDER: str = "logistics_incidents"
 
-    # TODO: AI API Configuration
+    # AI
+    GROQ_API_KEY: str
+    AI_MODEL: str
+    AI_MAX_RETRIES: int = 3
+    AI_RETRY_DELAY: int = 2
 
     # Pagination
     DEFAULT_PAGE_SIZE: int = 20

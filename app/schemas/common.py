@@ -1,8 +1,8 @@
 """
 Common Pydantic schemas used across the application
 """
-from pydantic import BaseModel, Field
-from typing import Generic, TypeVar, List, Optional
+from pydantic import BaseModel
+from typing import Generic, TypeVar, List
 from datetime import datetime
 from uuid import UUID
 import enum
@@ -58,6 +58,7 @@ class UUIDMixin(BaseModel):
     """Mixin for UUID primary key"""
     id: UUID
 
+
 class IncidentStatusEnum(str, enum.Enum):
     """Incident status enumerations"""
     PLANNED = "planned"
@@ -82,11 +83,3 @@ class ExpertiseEnum(str, enum.Enum):
     TIRES = 'tires'
     ELECTRICAL = "electrical"
     SUSPENSION = "suspension"
-
-
-class PriorityEnum:
-    """Priority level enumerations"""
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
-    CRITICAL = "critical"
