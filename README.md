@@ -121,6 +121,22 @@ Create a `.env` file in the root directory and use .env.example for it's configu
 | `DELETE` | `/api/v1/incidents/{incident_id} `                      | Delete mechanic                                    |
 | `PATCH`  | `/api/v1/incidents/{incident_id}/assign/{mechanic_id} ` | Assign incident to specified mechanic              |
 
+### AI mechanic suggestion
+
+AI suggests suitable mechanics based on the provided issue type and description.
+
+| Method | Endpoint                      | Description                                                                                                                  |
+|--------|-------------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| `POST` | `/api/v1/ai/suggest-mechanic` | Accepts JSON body with `issue_type` and `issue_description`, <br/> returns AI-suggested mechanics sorted by confidence score |
+
+#### Request Body Example
+```json
+{
+  "issue_type": "suspension",
+  "issue_description": "Front suspension makes squeaking sound when turning sharply, uneven tire wear on the front axle"
+}
+```
+
 ---
 
 ## 🛠️ Tech Stack
