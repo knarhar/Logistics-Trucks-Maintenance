@@ -40,7 +40,9 @@ class TruckService:
     def update(db: Session, db_obj: Truck, obj_in: TruckUpdate):
         update_data = obj_in.model_dump(exclude_none=True)
         for key, value in update_data.items():
-            setattr(db_obj, key, value)
+            if value not in [None, '']:
+                setattr(db_obj, key, value)
+
         db.commit()
         db.refresh(db_obj)
         return db_obj

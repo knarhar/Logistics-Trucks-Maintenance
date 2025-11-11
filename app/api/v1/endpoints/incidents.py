@@ -67,10 +67,13 @@ def update_incident(
     mechanic_id: str | None = Form(None),
     description: str | None = Form(None),
     status: str | None = Form(None),
-    photo: UploadFile | None = File(None),
+    photo: UploadFile | None  = File(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    if isinstance(photo, str) or photo == "": # For swagger
+        photo = None
+
     update_data = IncidentUpdate(
         mechanic_id=UUID(mechanic_id) if mechanic_id else None,
         description=description,

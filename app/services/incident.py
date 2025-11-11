@@ -10,6 +10,7 @@ from app.models.mechanic import Mechanic
 from app.models.truck import Truck
 from app.schemas.common import IncidentStatusEnum
 from app.schemas.incident import IncidentCreate
+from app.services.mechanic import mechanic_service
 
 
 class IncidentService:
@@ -38,7 +39,7 @@ class IncidentService:
         if not incident:
             raise NotFoundException(entity="Incident", entity_id=str(incident_id))
 
-        if data["photo"]:
+        if "photo" in data.keys():
             urls = upload_image(data["photo"])
 
             data["photo_url"] = urls['url']
@@ -49,8 +50,12 @@ class IncidentService:
         if incident.photo_url and data["photo_url"]:
             delete_image(str(incident.photo_public_id))
 
+        if data["status"] == IncidentStatusEnum.FINISHED and incident.mechanic_id:
+            mechanic_service.update_performance(db, incident.mechanic_id)
+
         for key, value in data.items():
-            setattr(incident, key, value)
+            if value not in [None, ""]:
+                setattr(incident, key, value)
 
         db.commit()
         db.refresh(incident)
@@ -99,6 +104,8 @@ class IncidentService:
         incident.mechanic_id = mechanic_id
         incident.status = IncidentStatusEnum.IN_PROGRESS
         incident.updated_at = datetime.now()
+
+        mechanic_service.update_performance(db, mechanic_id)
 
         db.commit()
         db.refresh(incident)

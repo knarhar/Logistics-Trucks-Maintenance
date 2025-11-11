@@ -4,7 +4,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 
 from app.core.exceptions import NotFoundException
+from app.models.incident import Incident
 from app.models.mechanic import Mechanic
+from app.schemas.common import IncidentStatusEnum
 from app.schemas.mechanic import MechanicCreate, MechanicUpdate
 
 
@@ -34,11 +36,13 @@ class MechanicService:
             raise NotFoundException(entity='Mechanic', entity_id=mechanic_id)
 
         for field, value in data.model_dump(exclude_unset=True).items():
-            setattr(mechanic, field, value)
+            if value not in (None, ''):
+                setattr(mechanic, field, value)
 
         mechanic.updated_at = datetime.now()
         db.commit()
         db.refresh(mechanic)
+
         return mechanic
 
     @staticmethod
@@ -49,5 +53,24 @@ class MechanicService:
         db.delete(mechanic)
         db.commit()
 
+    @staticmethod
+    def update_performance(db: Session, mechanic_id: str):
+        mechanic = db.query(Mechanic).filter(Mechanic.id == mechanic_id).first()
+        if not mechanic:
+            return
+
+        total_incidents = db.query(Incident).filter(Incident.mechanic_id == mechanic_id).count()
+        finished_incidents = (
+            db.query(Incident)
+            .filter(Incident.mechanic_id == mechanic_id, Incident.status == IncidentStatusEnum.FINISHED)
+            .count()
+        )
+
+        performance_score = (finished_incidents / total_incidents * 100) if total_incidents > 0 else 0.0
+        mechanic.performance_score = round(performance_score, 2)
+
+        db.commit()
+        db.refresh(mechanic)
 
 mechanic_service = MechanicService()
+
