@@ -4,28 +4,42 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 
 from app.core.cloudinary import delete_image, upload_image
-from app.core.exceptions import NotFoundException, ValidationException
+from app.core.exceptions import NotFoundException
+
 from app.models.incident import Incident
-from app.models.mechanic import Mechanic
 from app.models.truck import Truck
+
 from app.schemas.common import IncidentStatusEnum
 from app.schemas.incident import IncidentCreate
+
 from app.services.mechanic import mechanic_service
 
 
 class IncidentService:
     @staticmethod
+    def get_by_id(db: Session, incident_id: uuid.UUID):
+        """Get incident by id"""
+        incident = db.query(Incident).filter(Incident.id == incident_id).first()
+        if not incident:
+            raise NotFoundException(entity="Incident", entity_id=str(incident_id))
+        return incident
+
+    @staticmethod
     def create(db: Session, data: IncidentCreate):
-        truck = db.query(Truck).filter(Truck.id == data.truck_id).first()
+        """Create incident with given data"""
+        truck = db.query(Truck).filter(
+            Truck.id == data.truck_id,
+            Truck.is_deleted == False
+        ).first()
         if not truck:
             raise NotFoundException(entity='Truck', entity_id=str(data.truck_id))
 
         mechanic = None
         if data.mechanic_id:
-            mechanic = db.query(Mechanic).filter(Mechanic.id == data.mechanic_id).first()
+            mechanic = mechanic_service.get_by_id(db, data.mechanic_id)
+            mechanic_service.update_performance(db=db, mechanic_id=data.mechanic_id)
             if not mechanic:
                 raise NotFoundException(entity='Mechanic', entity_id=str(data.mechanic_id))
-
 
         incident = Incident(**data.model_dump())
         db.add(incident)
@@ -35,23 +49,26 @@ class IncidentService:
 
     @staticmethod
     def update(db: Session, incident_id: uuid.UUID, data: dict):
-        incident = db.query(Incident).filter(Incident.id == incident_id).first()
+        """Update incident with given data"""
+        incident = IncidentService.get_by_id(db, incident_id)
+
+        old_status = incident.status
+        old_mechanic_id = incident.mechanic_id
+
         if not incident:
             raise NotFoundException(entity="Incident", entity_id=str(incident_id))
 
         if "photo" in data.keys():
             urls = upload_image(data["photo"])
-
             data["photo_url"] = urls['url']
             data["photo_public_id"] = urls['public_id']
-
             data.pop("photo")
 
         if incident.photo_url and data["photo_url"]:
-            delete_image(str(incident.photo_public_id))
-
-        if data["status"] == IncidentStatusEnum.FINISHED and incident.mechanic_id:
-            mechanic_service.update_performance(db, incident.mechanic_id)
+            try:
+                delete_image(str(incident.photo_public_id))
+            except Exception:  # don't go down if there's a problem with Cloudinary
+                pass
 
         for key, value in data.items():
             if value not in [None, ""]:
@@ -59,10 +76,18 @@ class IncidentService:
 
         db.commit()
         db.refresh(incident)
+
+        if data.get("status"):
+            if incident.mechanic_id:
+                mechanic_service.update_performance(db, incident.mechanic_id)
+            if old_mechanic_id and old_mechanic_id != incident.mechanic_id:
+                mechanic_service.update_performance(db, old_mechanic_id)
+
         return incident
 
     @staticmethod
     def list(db: Session, status=None, truck_id=None, mechanic_id=None):
+        """List all incidents with given status, truck id and mechanic_id"""
         query = db.query(Incident)
         if status:
             query = query.filter(Incident.status == status)
@@ -73,42 +98,50 @@ class IncidentService:
         return query.all()
 
     @staticmethod
-    def delete(db: Session, incident_id: str):
-        incident = db.query(Incident).filter(Incident.id == incident_id).first()
+    def delete(db: Session, incident_id: uuid.UUID):
+        """Delete incident with given id"""
+        incident = IncidentService.get_by_id(db, incident_id)
         if not incident:
-            raise NotFoundException(entity='Incident', entity_id=incident_id)
+            raise NotFoundException(entity='Incident', entity_id=str(incident_id))
 
         if incident.photo_url and incident.photo_public_id:
-            delete_image(str(incident.photo_public_id))
+            try:
+                delete_image(str(incident.photo_public_id))
+            except Exception:
+                pass
 
         db.delete(incident)
         db.commit()
+
+        if incident.mechanic_id:
+            mechanic_service.update_performance(db, incident.mechanic_id)
+
         return True
 
     @staticmethod
-    def assign(db: Session, incident_id: str, mechanic_id: str):
-        try:
-            incident_uuid = uuid.UUID(incident_id)
-            mechanic_uuid = uuid.UUID(mechanic_id)
-        except ValueError:
-            raise ValidationException(message="Invalid UUID format for incident_id or mechanic_id")
+    def assign(db: Session, incident_id: uuid.UUID, mechanic_id: uuid.UUID):
+        """Assign incident with given id"""
 
-        incident = db.query(Incident).filter(Incident.id == incident_uuid).first()
+        incident = IncidentService.get_by_id(db, incident_id)
         if not incident:
-            raise NotFoundException(entity="Incident", entity_id=incident_id)
+            raise NotFoundException(entity="Incident", entity_id=str(incident_id))
 
-        mechanic = db.query(Mechanic).filter(Mechanic.id == mechanic_uuid).first()
+        mechanic = mechanic_service.get_by_id(db, mechanic_id)
         if not mechanic:
-            raise NotFoundException(entity="Mechanic", entity_id=mechanic_id)
-
+            raise NotFoundException(entity="Mechanic", entity_id=str(mechanic_id))
         incident.mechanic_id = mechanic_id
-        incident.status = IncidentStatusEnum.IN_PROGRESS
-        incident.updated_at = datetime.now()
 
-        mechanic_service.update_performance(db, mechanic_id)
+        if incident.status == IncidentStatusEnum.PLANNED:
+            incident.status = IncidentStatusEnum.IN_PROGRESS
+
+        incident.updated_at = datetime.now()
 
         db.commit()
         db.refresh(incident)
+
+        mechanic_service.update_performance(db, mechanic_id)
+
         return incident
+
 
 incident_service = IncidentService()

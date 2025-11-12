@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 
 from sqlalchemy.orm import Session
@@ -13,6 +14,7 @@ from app.schemas.mechanic import MechanicCreate, MechanicUpdate
 class MechanicService:
     @staticmethod
     def create(db: Session, data: MechanicCreate):
+        """Create a mechanic by given data"""
         new_mechanic = Mechanic(**data.model_dump())
         db.add(new_mechanic)
         db.commit()
@@ -21,6 +23,7 @@ class MechanicService:
 
     @staticmethod
     def get_all(db: Session, search: str | None = None):
+        """Get all mechanics with search"""
         query = select(Mechanic)
         if search:
             query = query.where(
@@ -30,10 +33,19 @@ class MechanicService:
         return db.execute(query).scalars().all()
 
     @staticmethod
-    def update(db: Session, mechanic_id: str, data: MechanicUpdate):
-        mechanic = db.get(Mechanic, mechanic_id)
+    def get_by_id(db: Session, mechanic_id: uuid.UUID):
+        """Get mechanic by given id."""
+        mechanic =  db.query(Mechanic).filter(Mechanic.id == mechanic_id).first()
+        if not mechanic_id:
+            raise NotFoundException(entity="Mechanic", entity_id=str(mechanic_id))
+        return mechanic
+
+    @staticmethod
+    def update(db: Session, mechanic_id: uuid.UUID, data: MechanicUpdate):
+        """Update mechanic by given data"""
+        mechanic = MechanicService.get_by_id(db, mechanic_id)
         if not mechanic:
-            raise NotFoundException(entity='Mechanic', entity_id=mechanic_id)
+            raise NotFoundException(entity='Mechanic', entity_id=str(mechanic_id))
 
         for field, value in data.model_dump(exclude_unset=True).items():
             if value not in (None, ''):
@@ -46,16 +58,19 @@ class MechanicService:
         return mechanic
 
     @staticmethod
-    def delete(db: Session, mechanic_id: str):
-        mechanic = db.get(Mechanic, mechanic_id)
+    def delete(db: Session, mechanic_id: uuid.UUID):
+        """Delete mechanic by given id"""
+        mechanic = MechanicService.get_by_id(db, mechanic_id)
         if not mechanic:
-            raise NotFoundException(entity='Mechanic', entity_id=mechanic_id)
+            raise NotFoundException(entity='Mechanic', entity_id=str(mechanic_id))
+
         db.delete(mechanic)
         db.commit()
 
     @staticmethod
-    def update_performance(db: Session, mechanic_id: str):
-        mechanic = db.query(Mechanic).filter(Mechanic.id == mechanic_id).first()
+    def update_performance(db: Session, mechanic_id: uuid.UUID):
+        """Update mechanic performance score"""
+        mechanic = MechanicService.get_by_id(db, mechanic_id)
         if not mechanic:
             return
 

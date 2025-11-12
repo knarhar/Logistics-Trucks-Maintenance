@@ -1,6 +1,7 @@
-import json
-import time
-import requests
+"""
+ AI mechanic suggestion endpoint
+"""
+import json, time, requests
 from app.core.config import settings
 from app.utils.ai import extract_json
 

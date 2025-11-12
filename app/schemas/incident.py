@@ -19,6 +19,13 @@ class IncidentBase(BaseModel):
 class IncidentCreate(IncidentBase):
     pass
 
+class IncidentUpdate(BaseModel):
+    mechanic_id: Optional[UUID] = None
+    description: Optional[str] = None
+    status: Optional[IncidentStatusEnum] = None
+    photo_url: Optional[str] = None
+    photo_public_id: Optional[str] = None
+
 
 class IncidentResponse(IncidentBase):
     id: UUID

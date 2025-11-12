@@ -63,15 +63,15 @@ def add_incident(
 
 @router.patch("/{incident_id}", response_model=IncidentResponse)
 def update_incident(
-    incident_id: UUID,
-    mechanic_id: str | None = Form(None),
-    description: str | None = Form(None),
-    status: str | None = Form(None),
-    photo: UploadFile | None  = File(None),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+        incident_id: UUID,
+        mechanic_id: str | None = Form(None),
+        description: str | None = Form(None),
+        status: str | None = Form(None),
+        photo: UploadFile | None = File(None),
+        db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_user)
 ):
-    if isinstance(photo, str) or photo == "": # For swagger
+    if isinstance(photo, str) or photo == "":  # For swagger
         photo = None
 
     update_data = IncidentUpdate(
@@ -87,9 +87,10 @@ def update_incident(
     incident = incident_service.update(db, incident_id, data)
     return incident
 
+
 @router.delete("/{incident_id}", response_model=SuccessResponse)
 def delete_incident(
-        incident_id: str,
+        incident_id: uuid.UUID,
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)
 ):
@@ -98,11 +99,11 @@ def delete_incident(
     return SuccessResponse(message="Incident deleted successfully")
 
 
-@router.post('{incident_id}/assign/{mechanic_id}', response_model=IncidentResponse)
+@router.post('/{incident_id}/assign/{mechanic_id}', response_model=IncidentResponse)
 def assign_incident(
         incident_id: str,
         mechanic_id: str,
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)
 ):
-    return incident_service.assign(db, incident_id, mechanic_id)
+    return incident_service.assign(db, UUID(incident_id), UUID(mechanic_id))
