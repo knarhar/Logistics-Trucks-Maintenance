@@ -1,32 +1,51 @@
+from uuid import UUID
+
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 
-from app.core.exceptions import DuplicateException
+from app.core.exceptions import DuplicateException, NotFoundException
 from app.models.truck import Truck
 from app.schemas.truck import TruckCreate, TruckUpdate
-from uuid import UUID
 
 
 class TruckService:
     @staticmethod
     def get_all(db: Session, skip: int = 0, limit: int = 10):
         """Get all trucks with pagination."""
-        query = select(Truck).where(Truck.is_deleted == False).offset(skip).limit(limit)
-        result = db.execute(query)
-        return result.scalars().all()
+        trucks = (
+            db.execute(
+                select(Truck)
+                .where(Truck.is_deleted == False)
+                .offset(skip)
+                .limit(limit))
+            .scalars()
+            .all()
+        )
+        return trucks
 
     @staticmethod
     def get_by_id(db: Session, id: UUID):
         """Get truck by id."""
-        query = select(Truck).where(Truck.id == id)
-        result = db.execute(query)
-        return result.scalars().first()
+        truck = (
+            db.execute(
+                select(Truck)
+                .where(Truck.id == id)
+            )
+            .scalars()
+            .first()
+        )
+
+        if not truck:
+            raise NotFoundException(entity='Truck', entity_id=str(id))
+
+        return truck
 
     @staticmethod
     def create(db: Session, data: TruckCreate):
         """Create new truck."""
         truck = db.execute(
-            select(Truck).where(Truck.plate_number == data.plate_number)
+            select(Truck)
+            .where(Truck.plate_number == data.plate_number)
         ).scalar_one_or_none()
 
         if truck and truck.is_deleted == False:

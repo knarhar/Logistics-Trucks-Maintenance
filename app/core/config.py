@@ -20,6 +20,10 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     REFRESH_TOKEN_EXPIRE_DAYS: int
 
+    DISPATCHER_USERNAME: str
+    DISPATCHER_PASSWORD: str
+    DISPATCHER_EMAIL: str
+
     # Cloudinary
     CLOUDINARY_CLOUD_NAME: str
     CLOUDINARY_API_KEY: str

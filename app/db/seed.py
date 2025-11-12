@@ -1,4 +1,6 @@
 import uuid
+
+from app.core.config import settings
 from app.db.base import SessionLocal
 from app.models.user import User
 from app.core.security import get_password_hash
@@ -14,9 +16,9 @@ def seed():
 
         user = User(
             id=uuid.uuid4(),
-            username="dispatcher1",
-            email="dispatcher@example.com",
-            hashed_password=get_password_hash("password123"),
+            username=settings.DISPATCHER_USERNAME,
+            email=settings.DISPATCHER_EMAIL,
+            hashed_password=get_password_hash(settings.DISPATCHER_PASSWORD),
             role="dispatcher",
             is_active=True,
         )

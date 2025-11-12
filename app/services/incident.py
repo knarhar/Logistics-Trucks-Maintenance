@@ -34,6 +34,11 @@ class IncidentService:
         if not truck:
             raise NotFoundException(entity='Truck', entity_id=str(data.truck_id))
 
+        incident = Incident(**data.model_dump())
+        db.add(incident)
+        db.commit()
+        db.refresh(incident)
+
         mechanic = None
         if data.mechanic_id:
             mechanic = mechanic_service.get_by_id(db, data.mechanic_id)
@@ -41,10 +46,6 @@ class IncidentService:
             if not mechanic:
                 raise NotFoundException(entity='Mechanic', entity_id=str(data.mechanic_id))
 
-        incident = Incident(**data.model_dump())
-        db.add(incident)
-        db.commit()
-        db.refresh(incident)
         return incident
 
     @staticmethod
@@ -52,7 +53,6 @@ class IncidentService:
         """Update incident with given data"""
         incident = IncidentService.get_by_id(db, incident_id)
 
-        old_status = incident.status
         old_mechanic_id = incident.mechanic_id
 
         if not incident:

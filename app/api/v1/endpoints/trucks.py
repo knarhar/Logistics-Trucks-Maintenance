@@ -41,8 +41,6 @@ def update_truck(
     current_user: User = Depends(get_current_user)
 ):
     truck = truck_service.get_by_id(db, truck_id)
-    if not truck:
-        raise NotFoundException(entity='Truck', entity_id=str(truck_id))
     return truck_service.update(db, truck, truck_in)
 
 
