@@ -17,8 +17,7 @@ Built with FastAPI, structured for scalability and clarity.
     │   ├───schemas
     │   ├───services
     │   ├───utils
-    ├───logs
-    └───scripts          
+    └───logs          
     │   .env
     │   .env.example
     │   .gitignore
@@ -50,6 +49,13 @@ Built with FastAPI, structured for scalability and clarity.
 
 ```bash
   pip install -r requirements.txt
+```
+
+### 4. Create and run migrations
+
+```bash
+    alembic revision --autogenerate -m "Initial migration"
+    alembic upgrade head
 ```
 
 ---
