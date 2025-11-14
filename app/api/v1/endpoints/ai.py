@@ -7,8 +7,12 @@ from app.services.mechanic import mechanic_service
 
 router = APIRouter(tags=["AI"])
 
+
 @router.post('/suggest-mechanic')
-def ai_suggestion(request: MechanicSuggestionRequest, db: Session = Depends(get_db)):
+def ai_suggestion(
+        request: MechanicSuggestionRequest,
+        db: Session = Depends(get_db)
+):
     mechanics = mechanic_service.get_all(db)
     return suggest_mechanics_ai(
         issue_type=request.issue_type,

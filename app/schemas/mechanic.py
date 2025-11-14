@@ -1,7 +1,6 @@
 from pydantic import BaseModel, Field
-from uuid import UUID
-from datetime import datetime
-from app.schemas.common import ExpertiseEnum
+
+from app.schemas.common import ExpertiseEnum, UUIDMixin, TimestampMixin
 
 
 class MechanicBase(BaseModel):
@@ -22,10 +21,17 @@ class MechanicUpdate(BaseModel):
     performance_score: int | None = Field(default=None, ge=0, le=100)
 
 
-class MechanicResponse(MechanicBase):
-    id: UUID
-    created_at: datetime
-    updated_at: datetime
-
+class MechanicResponse(UUIDMixin, TimestampMixin, MechanicBase):
     class Config:
         from_attributes = True
+        json_scheme_extra = {
+            "example": {
+                "first_name": "John",
+                "last_name": "Doe",
+                "expertise": "engine",
+                "performance_score": 0,
+                "id": "3fa85f64...",
+                "created_at": "2025-11-14T10:20:42.625Z",
+                "updated_at": "2025-11-14T10:20:42.625Z"
+            }
+        }

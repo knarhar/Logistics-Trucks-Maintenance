@@ -2,7 +2,7 @@ import cloudinary
 import cloudinary.uploader
 
 from app.core.config import settings
-from app.core.exceptions import ValidationException
+from app.core.exceptions import ValidationException, FileUploadException
 
 cloudinary.config(
     cloud_name=settings.CLOUDINARY_CLOUD_NAME,
@@ -23,11 +23,14 @@ def upload_image(photo) -> dict:
     if len(file_bytes) > settings.MAX_UPLOAD_SIZE:
         raise ValidationException(message="Image too large, max size 5MB")
 
-    result = cloudinary.uploader.upload(
-        file_bytes,
-        resource_type="image",
-        folder=settings.CLOUDINARY_FOLDER
-    )
+    try:
+        result = cloudinary.uploader.upload(
+            file_bytes,
+            resource_type="image",
+            folder=settings.CLOUDINARY_FOLDER
+        )
+    except Exception as e:
+        raise FileUploadException(message=str(e))
 
     return {
         "url": result.get("secure_url"),

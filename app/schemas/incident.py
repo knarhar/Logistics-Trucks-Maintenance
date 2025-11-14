@@ -1,15 +1,16 @@
-from uuid import UUID
-from datetime import datetime
-from pydantic import BaseModel, Field
 from typing import Optional
+from uuid import UUID
 
-from app.schemas.common import IncidentStatusEnum
+from pydantic import BaseModel, Field
+
+from app.schemas.common import IncidentStatusEnum, UUIDMixin, TimestampMixin
 
 
 class IncidentBase(BaseModel):
+    """Base Incident model"""
     truck_id: UUID
     mechanic_id: Optional[UUID] | None
-    issue_type: str = Field(..., example="engine")
+    issue_type: str = Field(..., description="Incident issue type")
     description: Optional[str] = None
     photo_url: Optional[str] = None
     photo_public_id: Optional[str] = None
@@ -17,9 +18,12 @@ class IncidentBase(BaseModel):
 
 
 class IncidentCreate(IncidentBase):
+    """Incident create model"""
     pass
 
+
 class IncidentUpdate(BaseModel):
+    """Incident update model"""
     mechanic_id: Optional[UUID] = None
     description: Optional[str] = None
     status: Optional[IncidentStatusEnum] = None
@@ -27,10 +31,8 @@ class IncidentUpdate(BaseModel):
     photo_public_id: Optional[str] = None
 
 
-class IncidentResponse(IncidentBase):
-    id: UUID
-    created_at: datetime
-    updated_at: datetime
+class IncidentResponse(UUIDMixin, TimestampMixin, IncidentBase):
+    """Incident response model"""
 
     class Config:
-        form_attribute = True
+        form_attributes = True

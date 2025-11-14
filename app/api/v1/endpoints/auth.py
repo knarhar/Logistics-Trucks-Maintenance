@@ -12,7 +12,7 @@ router = APIRouter(tags=["Authentication"])
     "/login",
     response_model=LoginResponse,
     summary="Login with credentials",
-    description="Authenticate user and get access & refresh tokens",
+    description="Authenticate user and get access & refresh tokens"
 )
 def login(
         username: str = Form(...),
@@ -56,12 +56,10 @@ def refresh_access_token(
         raise UnauthorizedException(message="Token has been revoked")
 
     payload = validate_refresh_token(refresh_token)
-
     if not payload:
         raise UnauthorizedException(message="Invalid or expired refresh token")
 
     username = payload.get("sub")
-
     if not username:
         raise UnauthorizedException(message="Invalid token payload")
 
@@ -95,7 +93,6 @@ def logout(
         current_user: User = Depends(get_current_user)
 ):
     blacklisted_tokens.add(refresh_token)
-
     return LogoutResponse(
         success=True,
         message="Successfully logged out"

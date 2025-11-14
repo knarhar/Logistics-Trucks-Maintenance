@@ -1,6 +1,8 @@
 """
 Mechanic management endpoints
 """
+import uuid
+
 from fastapi import APIRouter, Query, Depends
 from sqlalchemy.orm import Session
 
@@ -31,7 +33,7 @@ def add_mechanic(
 
 @router.patch("/{mechanic_id}", response_model=MechanicResponse)
 def update_mechanic(
-        mechanic_id: UUID,
+        mechanic_id: uuid.UUID,
         data: MechanicUpdate,
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)
@@ -41,7 +43,7 @@ def update_mechanic(
 
 @router.delete("/{mechanic_id}", response_model=SuccessResponse)
 def delete_mechanic(
-        mechanic_id: UUID,
+        mechanic_id: uuid.UUID,
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)
 ):
