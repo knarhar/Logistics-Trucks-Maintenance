@@ -18,7 +18,7 @@ class IncidentBase(BaseModel):
     description: Optional[str] = None
     photo_url: Optional[str] = None
     photo_public_id: Optional[str] = None
-    status: IncidentStatusEnum = IncidentStatusEnum.PLANNED
+    status: Optional[IncidentStatusEnum] = IncidentStatusEnum.PLANNED
 
     @field_validator("status", mode="before")
     @classmethod
@@ -28,7 +28,7 @@ class IncidentBase(BaseModel):
 
         allowed = [e for e in IncidentStatusEnum]
         if value not in allowed:
-            raise ValidationException(f"Invalid status '{value}'. Allowed:  {', '.join(allowed)}")
+            raise ValidationException(f"Invalid status value '{value}'. Allowed:  {', '.join(allowed)}")
 
         return value
 
@@ -54,7 +54,7 @@ class IncidentUpdate(BaseModel):
 
         allowed = [e for e in IncidentStatusEnum]
         if value not in allowed:
-            raise ValidationException(f"Invalid status '{value}'. Allowed:  {', '.join(allowed)}")
+            raise ValidationException(f"Invalid status value '{value}'. Allowed:  {', '.join(allowed)}")
 
         return value
 

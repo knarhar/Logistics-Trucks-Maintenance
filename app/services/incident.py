@@ -118,30 +118,5 @@ class IncidentService:
 
         return True
 
-    @staticmethod
-    def assign(db: Session, incident_id: uuid.UUID, mechanic_id: uuid.UUID):
-        """Assign incident with given id"""
-
-        incident = IncidentService.get_by_id(db, incident_id)
-        if not incident:
-            raise NotFoundException(entity="Incident", entity_id=str(incident_id))
-
-        mechanic = mechanic_service.get_by_id(db, mechanic_id)
-        if not mechanic:
-            raise NotFoundException(entity="Mechanic", entity_id=str(mechanic_id))
-        incident.mechanic_id = mechanic_id
-
-        if incident.status == IncidentStatusEnum.PLANNED:
-            incident.status = IncidentStatusEnum.IN_PROGRESS
-
-        incident.updated_at = datetime.now()
-
-        db.commit()
-        db.refresh(incident)
-
-        mechanic_service.update_performance(db, mechanic_id)
-
-        return incident
-
 
 incident_service = IncidentService()

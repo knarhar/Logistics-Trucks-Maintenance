@@ -22,7 +22,7 @@ class MechanicBase(BaseModel):
 
         allowed = [e for e in ExpertiseEnum]
         if value not in allowed:
-            raise ValidationException(f"Invalid status '{value}'. Allowed:  {', '.join(allowed)}")
+            raise ValidationException(f"Invalid expertise value '{value}'. Allowed:  {', '.join(allowed)}")
 
         return value
 
@@ -47,7 +47,7 @@ class MechanicUpdate(BaseModel):
 
         allowed = [e for e in ExpertiseEnum]
         if value not in allowed:
-            raise ValidationException(f"Invalid status '{value}'. Allowed:  {', '.join(allowed)}")
+            raise ValidationException(f"Invalid expertise value '{value}'. Allowed:  {', '.join(allowed)}")
 
         return value
 

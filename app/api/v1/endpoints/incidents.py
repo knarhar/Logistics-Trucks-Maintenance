@@ -8,11 +8,11 @@ from fastapi import APIRouter, Depends, Form, UploadFile, File
 from sqlalchemy.orm import Session
 
 from app.core.cloudinary import upload_image
-from app.services.incident import incident_service
 from app.core.security import get_db, get_current_user
 from app.models.user import User
 from app.schemas.common import SuccessResponse
 from app.schemas.incident import *
+from app.services.incident import incident_service
 
 router = APIRouter(tags=["Incidents"])
 
@@ -31,7 +31,7 @@ def get_incidents(
 def add_incident(
         truck_id: str = Form(...),
         mechanic_id: str | None = Form(None),
-        status: IncidentStatusEnum = Form(...),
+        status: str | None = Form(None),
         issue_type: str = Form(...),
         description: str = Form(...),
         photo: UploadFile | str | None = File(None),
@@ -73,7 +73,6 @@ def update_incident(
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)
 ):
-
     if photo == "" or isinstance(photo, str):
         photo = None
 
@@ -91,7 +90,6 @@ def update_incident(
     return incident_service.update(db, incident_id, data)
 
 
-
 @router.delete("/{incident_id}", response_model=SuccessResponse)
 def delete_incident(
         incident_id: uuid.UUID,
@@ -101,13 +99,3 @@ def delete_incident(
     incident_service.delete(db, incident_id)
 
     return SuccessResponse(message="Incident deleted successfully")
-
-
-@router.post('/{incident_id}/assign/{mechanic_id}', response_model=IncidentResponse)
-def assign_incident(
-        incident_id: str,
-        mechanic_id: str,
-        db: Session = Depends(get_db),
-        current_user: User = Depends(get_current_user)
-):
-    return incident_service.assign(db, UUID(incident_id), UUID(mechanic_id))
