@@ -11,7 +11,7 @@ from app.core.cloudinary import upload_image
 from app.services.incident import incident_service
 from app.core.security import get_db, get_current_user
 from app.models.user import User
-from app.schemas.common import SuccessResponse, IssueTypeEnum
+from app.schemas.common import SuccessResponse
 from app.schemas.incident import *
 
 router = APIRouter(tags=["Incidents"])
@@ -32,9 +32,9 @@ def add_incident(
         truck_id: str = Form(...),
         mechanic_id: str | None = Form(None),
         status: IncidentStatusEnum = Form(...),
-        issue_type: IssueTypeEnum = Form(...),
+        issue_type: str = Form(...),
         description: str = Form(...),
-        photo: UploadFile = File(None),
+        photo: UploadFile | str | None = File(None),
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)
 ):
@@ -45,6 +45,8 @@ def add_incident(
         urls = upload_image(photo)
         photo_url = urls['url']
         photo_public_id = urls['public_id']
+    elif photo == "" or isinstance(photo, str):
+        photo = None
 
     if mechanic_id == "":
         mechanic_id = None
@@ -67,11 +69,12 @@ def update_incident(
         mechanic_id: str | None = Form(None),
         description: str | None = Form(None),
         status: str | None = Form(None),
-        photo: UploadFile | None = File(None),
+        photo: UploadFile | str | None = File(None),
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)
 ):
-    if isinstance(photo, str) or photo == "":  # For swagger
+
+    if photo == "" or isinstance(photo, str):
         photo = None
 
     update_data = IncidentUpdate(
@@ -81,11 +84,12 @@ def update_incident(
     )
 
     data = update_data.model_dump()
+
     if photo:
         data["photo"] = photo
 
-    incident = incident_service.update(db, incident_id, data)
-    return incident
+    return incident_service.update(db, incident_id, data)
+
 
 
 @router.delete("/{incident_id}", response_model=SuccessResponse)

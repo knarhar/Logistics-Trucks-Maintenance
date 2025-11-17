@@ -67,19 +67,10 @@ class IncidentStatusEnum(str, enum.Enum):
     ON_HOLD = "on_hold"
 
 
-class IssueTypeEnum(str, enum.Enum):
-    """Issue type enumerations"""
+class ExpertiseEnum(str, enum.Enum):
+    """Mechanic expertise enumerations"""
     ENGINE = "engine"
     TRANSMISSION = "transmission"
-    BRAKES = "brakes"
-    ELECTRICAL = "electrical"
     TIRES = "tires"
-    BODY = "body"
-
-
-class ExpertiseEnum(str, enum.Enum):
-    ENGINE = 'engine'
-    TRANSMISSION = 'transmission'
-    TIRES = 'tires'
     ELECTRICAL = "electrical"
     SUSPENSION = "suspension"

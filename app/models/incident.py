@@ -9,7 +9,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import Column, String, DateTime, Enum, ForeignKey
 
 from app.db.base import Base
-from app.schemas.common import IncidentStatusEnum, IssueTypeEnum
+from app.schemas.common import IncidentStatusEnum
 
 
 class Incident(Base):
@@ -19,7 +19,7 @@ class Incident(Base):
     truck_id = Column(UUID, ForeignKey("trucks.id"))
     mechanic_id = Column(UUID, ForeignKey("mechanics.id"), nullable=True)
     status = Column(Enum(IncidentStatusEnum))
-    issue_type = Column(Enum(IssueTypeEnum))
+    issue_type = Column(String, nullable=False)
     description = Column(String)
     photo_url = Column(String, nullable=True)
     photo_public_id = Column(String, nullable=True)

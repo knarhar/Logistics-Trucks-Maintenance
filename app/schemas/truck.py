@@ -1,3 +1,6 @@
+"""
+    Truck model Pydantic schemas
+"""
 from pydantic import BaseModel, Field
 from app.schemas.common import UUIDMixin, TimestampMixin
 
