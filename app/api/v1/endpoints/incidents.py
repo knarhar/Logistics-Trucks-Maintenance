@@ -32,7 +32,7 @@ def add_incident(
         truck_id: str = Form(...),
         mechanic_id: str | None = Form(None),
         status: str | None = Form(None),
-        issue_type: str = Form(...),
+        issue_type: str = Form("General"),
         description: str = Form(...),
         photo: UploadFile | str | None = File(None),
         db: Session = Depends(get_db),
@@ -41,19 +41,31 @@ def add_incident(
     photo_url = None
     photo_public_id = None
 
-    if photo:
+    if photo == "" or isinstance(photo, str):
+        photo = None
+    elif photo not in (None, ""):
         urls = upload_image(photo)
         photo_url = urls['url']
         photo_public_id = urls['public_id']
-    elif photo == "" or isinstance(photo, str):
-        photo = None
 
     if mechanic_id == "":
         mechanic_id = None
 
+    try:
+        truck_uuid = uuid.UUID(truck_id)
+    except ValueError:
+        raise ValidationException("Truck ID not found", status_code=404)
+
+    mechanic_uuid = None
+    try:
+        if mechanic_id:
+            mechanic_uuid = uuid.UUID(mechanic_id)
+    except ValueError:
+        raise ValidationException("Mechanic ID not found", status_code=404)
+
     incident_data = IncidentCreate(
-        truck_id=uuid.UUID(truck_id),
-        mechanic_id=mechanic_id,
+        truck_id=truck_uuid,
+        mechanic_id=mechanic_uuid,
         status=status,
         issue_type=issue_type,
         photo_url=photo_url,
@@ -76,13 +88,20 @@ def update_incident(
     if photo == "" or isinstance(photo, str):
         photo = None
 
+    mechanic_uuid = None
+    try:
+        if mechanic_id not in [None, ""]:
+            mechanic_uuid = uuid.UUID(mechanic_id)
+    except ValueError:
+        raise ValidationException("Mechanic ID not found", status_code=404)
+
     update_data = IncidentUpdate(
-        mechanic_id=UUID(mechanic_id) if mechanic_id else None,
+        mechanic_id=mechanic_uuid,
         description=description,
         status=status
     )
 
-    data = update_data.model_dump()
+    data = update_data.model_dump(exclude_none=True)
 
     if photo:
         data["photo"] = photo

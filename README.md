@@ -4,6 +4,7 @@ Backend service for managing logistics truck maintenance records, schedules, and
 Built with FastAPI, structured for scalability and clarity.
 
 ### Project structure
+
 ```
     ├───alembic
     │   └───versions
@@ -16,8 +17,7 @@ Built with FastAPI, structured for scalability and clarity.
     │   ├───models
     │   ├───schemas
     │   ├───services
-    │   ├───utils
-    └───logs          
+    │   └───utils        
     │   .env
     │   .env.example
     │   .gitignore
@@ -84,25 +84,25 @@ Create a `.env` file in the root directory and use .env.example for it's configu
 
 ---
 
-## 🌍 API Endpoints 
+## 🌍 API Endpoints
 
 ### Basic
 
-| Method   | Endpoint                          | Description                    |
-|----------|-----------------------------------|--------------------------------|
-| `GET`    | `/`                               | Root health check              |
-| `GET`    | `/health`                         | Detailed health status         |
+| Method | Endpoint  | Description            |
+|--------|-----------|------------------------|
+| `GET`  | `/`       | Root health check      |
+| `GET`  | `/health` | Detailed health status |
 
 ### Authentication
-| Method   | Endpoint                          | Description                    |
-|----------|-----------------------------------|--------------------------------|
-|          |                                   |                                |
-| `POST`   | `/api/v1/auth/login`              | Login                          |
-| `POST`   | `/api/v1/auth/logout`             | Logout                         |
-| `POST`   | `/api/v1/auth/refresh`            | Refreshing access token        |
 
+| Method | Endpoint               | Description             |
+|--------|------------------------|-------------------------|
+| `POST` | `/api/v1/auth/login`   | Login                   |
+| `POST` | `/api/v1/auth/logout`  | Logout                  |
+| `POST` | `/api/v1/auth/refresh` | Refreshing access token |
 
 ### Trucks
+
 | Method   | Endpoint                          | Description                    |
 |----------|-----------------------------------|--------------------------------|
 | `POST`   | `/api/v1/trucks/add`              | Create a truck                 |
@@ -111,6 +111,7 @@ Create a `.env` file in the root directory and use .env.example for it's configu
 | `DELETE` | `/api/v1/trucks/{truck_id} `      | Soft delete truck              |
 
 ### Mechanics
+
 | Method   | Endpoint                          | Description                                  |
 |----------|-----------------------------------|----------------------------------------------|
 | `POST`   | `/api/v1/mechanics/add`           | Create a mechanic                            |
@@ -119,13 +120,13 @@ Create a `.env` file in the root directory and use .env.example for it's configu
 | `DELETE` | `/api/v1/mechanic/{mechanic_id} ` | Delete mechanic                              |
 
 ### Incidents
-| Method   | Endpoint                                                | Description                                        |
-|----------|---------------------------------------------------------|----------------------------------------------------|
-| `POST`   | `/api/v1/incidents/add`                                 | Create an incident                                 |
-| `GET`    | `/api/v1/incidents?status=&truck_id=&mechanic_id= `     | Get incidents list with optional filtration params |
-| `PATCH`  | `/api/v1/incidents/{incident_id} `                      | Update incident                                    |
-| `DELETE` | `/api/v1/incidents/{incident_id} `                      | Delete mechanic                                    |
-| `PATCH`  | `/api/v1/incidents/{incident_id}/assign/{mechanic_id} ` | Assign incident to specified mechanic              |
+
+| Method   | Endpoint                                            | Description                                        |
+|----------|-----------------------------------------------------|----------------------------------------------------|
+| `POST`   | `/api/v1/incidents/add`                             | Create an incident                                 |
+| `GET`    | `/api/v1/incidents?status=&truck_id=&mechanic_id= ` | Get incidents list with optional filtration params |
+| `PATCH`  | `/api/v1/incidents/{incident_id} `                  | Update incident                                    |
+| `DELETE` | `/api/v1/incidents/{incident_id} `                  | Delete mechanic                                    |
 
 ### AI mechanic suggestion
 
@@ -136,6 +137,7 @@ AI suggests suitable mechanics based on the provided issue type and description.
 | `POST` | `/api/v1/ai/suggest-mechanic` | Accepts JSON body with `issue_type` and `issue_description`, <br/> returns AI-suggested mechanics sorted by confidence score |
 
 #### Request Body Example
+
 ```json
 {
   "issue_type": "suspension",
@@ -153,11 +155,5 @@ AI suggests suitable mechanics based on the provided issue type and description.
 * **PostgreSQL** — database
 * **Uvicorn** — ASGI server
 
----
-
-## 📦 Future Features
-
-* Truck maintenance scheduling
-* Driver and fleet management
 
 

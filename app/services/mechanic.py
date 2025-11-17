@@ -3,8 +3,9 @@ from datetime import datetime
 
 from sqlalchemy.orm import Session
 from sqlalchemy import select
+from starlette import status
 
-from app.core.exceptions import NotFoundException
+from app.core.exceptions import NotFoundException, ValidationException
 from app.models.incident import Incident
 from app.models.mechanic import Mechanic
 from app.schemas.common import IncidentStatusEnum
@@ -15,6 +16,9 @@ class MechanicService:
     @staticmethod
     def create(db: Session, data: MechanicCreate):
         """Create a mechanic by given data"""
+        if data.first_name in [None, ""] or data.last_name in [None, ""]:
+            raise ValidationException("Invalid mechanic credentials.", status.HTTP_400_BAD_REQUEST)
+
         new_mechanic = Mechanic(**data.model_dump())
         db.add(new_mechanic)
         db.commit()

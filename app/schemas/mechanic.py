@@ -1,6 +1,7 @@
 """
     Mechanic model Pydantic schemas
 """
+
 from pydantic import BaseModel, Field, field_validator
 
 from app.core.exceptions import ValidationException
@@ -14,17 +15,24 @@ class MechanicBase(BaseModel):
     expertise: ExpertiseEnum
     performance_score: int = Field(default=0, ge=0, le=100)
 
+
     @field_validator("expertise", mode="before")
     @classmethod
-    def validate_status(cls, value):
+    def validate_expertise(cls, value):
         if value is None or value == "":
-            return None
+            raise ValidationException("Expertise cannot be empty", status_code=400)
 
-        allowed = [e for e in ExpertiseEnum]
-        if value not in allowed:
-            raise ValidationException(f"Invalid expertise value '{value}'. Allowed:  {', '.join(allowed)}")
+        if isinstance(value, ExpertiseEnum):
+            return value
 
-        return value
+        try:
+            return ExpertiseEnum(value)
+        except ValueError:
+            allowed = [e.value for e in ExpertiseEnum]
+            raise ValidationException(
+                f"Invalid expertise value '{value}'. Allowed: {', '.join(allowed)}",
+                status_code=400
+            )
 
 
 class MechanicCreate(MechanicBase):
@@ -41,22 +49,29 @@ class MechanicUpdate(BaseModel):
 
     @field_validator("expertise", mode="before")
     @classmethod
-    def validate_status(cls, value):
+    def validate_expertise(cls, value):
         if value is None or value == "":
-            return None
+            raise ValidationException("Expertise cannot be empty", status_code=400)
 
-        allowed = [e for e in ExpertiseEnum]
-        if value not in allowed:
-            raise ValidationException(f"Invalid expertise value '{value}'. Allowed:  {', '.join(allowed)}")
+        if isinstance(value, ExpertiseEnum):
+            return value
 
-        return value
+        try:
+            return ExpertiseEnum(value)
+        except ValueError:
+            allowed = [e.value for e in ExpertiseEnum]
+            raise ValidationException(
+                f"Invalid expertise value '{value}'. Allowed: {', '.join(allowed)}",
+                status_code=400
+            )
 
 
 class MechanicResponse(UUIDMixin, TimestampMixin, MechanicBase):
     """Mechanic response"""
+
     class Config:
         from_attributes = True
-        json_scheme_extra = {
+        json_schema_extra = {
             "example": {
                 "first_name": "John",
                 "last_name": "Doe",

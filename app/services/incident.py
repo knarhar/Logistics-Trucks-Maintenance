@@ -1,17 +1,12 @@
 import uuid
-from datetime import datetime
 
 from sqlalchemy.orm import Session
 
 from app.core.cloudinary import delete_image, upload_image
-from app.core.exceptions import NotFoundException
-
+from app.core.exceptions import NotFoundException, ValidationException
 from app.models.incident import Incident
 from app.models.truck import Truck
-
-from app.schemas.common import IncidentStatusEnum
 from app.schemas.incident import IncidentCreate
-
 from app.services.mechanic import mechanic_service
 
 
@@ -58,13 +53,13 @@ class IncidentService:
         if not incident:
             raise NotFoundException(entity="Incident", entity_id=str(incident_id))
 
-        if "photo" in data.keys():
-            urls = upload_image(data["photo"])
-            data["photo_url"] = urls['url']
-            data["photo_public_id"] = urls['public_id']
-            data.pop("photo")
+        if "photo" in data.keys() and data["photo"] not in [None, ""]:
+                urls = upload_image(data["photo"])
+                data["photo_url"] = urls['url']
+                data["photo_public_id"] = urls['public_id']
+                data.pop("photo")
 
-        if incident.photo_url and data["photo_url"]:
+        if incident.photo_url and "photo_url" in data.keys():
             try:
                 delete_image(str(incident.photo_public_id))
             except Exception:  # don't go down if there's a problem with Cloudinary

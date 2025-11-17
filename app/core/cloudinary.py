@@ -14,6 +14,8 @@ cloudinary.config(
 
 def upload_image(photo) -> dict:
     """Uploads an image to Cloudinary and returns the URL"""
+    if isinstance(photo, str):
+        raise FileUploadException("Invalid file upload")
 
     if photo.content_type not in settings.ALLOWED_IMAGE_TYPES:
         raise ValidationException(message="Image type not allowed")

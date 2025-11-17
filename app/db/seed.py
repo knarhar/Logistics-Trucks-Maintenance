@@ -1,15 +1,19 @@
 import uuid
 
 from app.core.config import settings
+from app.core.security import get_password_hash
 from app.db.base import SessionLocal
 from app.models.user import User
-from app.core.security import get_password_hash
+
 
 def seed():
+    if settings.DISPATCHER_USERNAME in [None, ""] or settings.DISPATCHER_PASSWORD in [None, ""]:
+        raise Exception("You must specify a username or password.")
+
     db = SessionLocal()
     try:
         # Check if user already exists
-        existing_user = db.query(User).filter(User.username == "dispatcher1").first()
+        existing_user = db.query(User).filter(User.username == settings.DISPATCHER_USERNAME).first()
         if existing_user:
             print("User already exists, skipping seeding.")
             return
@@ -27,6 +31,7 @@ def seed():
         print("User seeded successfully")
     finally:
         db.close()
+
 
 if __name__ == "__main__":
     seed()

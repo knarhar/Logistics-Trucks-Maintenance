@@ -40,8 +40,7 @@ def update_truck(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    truck = truck_service.get_by_id(db, truck_id)
-    return truck_service.update(db, truck, truck_in)
+    return truck_service.update(db, truck_id, truck_in)
 
 
 @router.delete("/{truck_id}", response_model=SuccessResponse)

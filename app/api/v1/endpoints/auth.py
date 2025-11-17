@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Form
 
 from app.core.security import *
-from app.core.exceptions import *
 from app.models.user import User
 from app.schemas.auth import *
 
@@ -15,10 +14,13 @@ router = APIRouter(tags=["Authentication"])
     description="Authenticate user and get access & refresh tokens"
 )
 def login(
-        username: str = Form(...),
-        password: str = Form(...),
+        username: str | None = Form(None),
+        password: str | None = Form(None),
         db: Session = Depends(get_db)
 ):
+    if username is None or password is None:
+        raise ValidationException("Missing username or password", status.HTTP_400_BAD_REQUEST)
+
     user = db.query(User).filter(User.username == username).first()
     if not user:
         raise UnauthorizedException(message="Invalid username or password")
@@ -49,9 +51,12 @@ def login(
     description="Get new access token using refresh token"
 )
 def refresh_access_token(
-        refresh_token: str = Form(..., description="Refresh token"),
+        refresh_token: str = Form(None, description="Refresh token"),
         db: Session = Depends(get_db)
 ):
+    if refresh_token is None:
+        raise ValidationException("Missing refresh token", status.HTTP_400_BAD_REQUEST)
+
     if refresh_token in blacklisted_tokens:
         raise UnauthorizedException(message="Token has been revoked")
 
@@ -89,12 +94,20 @@ def refresh_access_token(
     description="Revoke refresh token (logout)"
 )
 def logout(
-        refresh_token: str = Form(..., description="Refresh token to revoke"),
+        refresh_token: str = Form(None, description="Refresh token to revoke"),
         current_user: User = Depends(get_current_user)
 ):
-    blacklisted_tokens.add(refresh_token)
+    if refresh_token is None:
+        raise ValidationException("Missing refresh token", status.HTTP_400_BAD_REQUEST)
+
+    payload = validate_refresh_token(refresh_token)
+
+    if payload and payload["sub"] == current_user.username:
+        blacklisted_tokens.add(refresh_token)
+    else:
+        raise UnauthorizedException(message="Invalid or expired refresh token")
+
     return LogoutResponse(
         success=True,
         message="Successfully logged out"
     )
-

@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 
-from app.core.exceptions import DuplicateException, NotFoundException
+from app.core.exceptions import DuplicateException, NotFoundException, ValidationException
 from app.models.truck import Truck
 from app.schemas.truck import TruckCreate, TruckUpdate
 
@@ -43,6 +43,9 @@ class TruckService:
     @staticmethod
     def create(db: Session, data: TruckCreate):
         """Create new truck."""
+        if data.plate_number in [None, ""] or data.model in [None, ""] or data.year is None or data.year < 1900:
+            raise ValidationException(message='Missing or invalid values', status_code=400)
+
         truck = db.execute(
             select(Truck)
             .where(Truck.plate_number == data.plate_number)
@@ -60,16 +63,29 @@ class TruckService:
         db.refresh(truck)
 
     @staticmethod
-    def update(db: Session, db_obj: Truck, obj_in: TruckUpdate):
+    def update(db: Session, truck_id: UUID, obj_in: TruckUpdate):
         """Update truck with given data."""
-        update_data = obj_in.model_dump(exclude_none=True)
+        truck = TruckService.get_by_id(db, truck_id)
+
+        update_data = obj_in.model_dump()
+
+        if update_data['year'] and update_data['year'] < 1900:
+            update_data['year'] = 1900
+
+        if update_data['plate_number']:
+            dub_truck = db.execute(
+                select(Truck)
+                .filter(Truck.plate_number == update_data['plate_number'], Truck.id != truck_id)).scalar_one_or_none()
+            if dub_truck:
+                raise DuplicateException('Plate number', update_data['plate_number'])
+
         for key, value in update_data.items():
             if value not in [None, '']:
-                setattr(db_obj, key, value)
+                setattr(truck, key, value)
 
         db.commit()
-        db.refresh(db_obj)
-        return db_obj
+        db.refresh(truck)
+        return truck
 
 
 truck_service = TruckService()

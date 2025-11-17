@@ -31,6 +31,7 @@ def add_mechanic(
     return mechanic_service.create(db, data)
 
 
+
 @router.patch("/{mechanic_id}", response_model=MechanicResponse)
 def update_mechanic(
         mechanic_id: uuid.UUID,
@@ -48,3 +49,4 @@ def delete_mechanic(
         current_user: User = Depends(get_current_user)
 ):
     mechanic_service.delete(db, mechanic_id)
+    return SuccessResponse(message="Mechanic deleted successfully")

@@ -1,13 +1,20 @@
 """
 Authentication Pydantic schemas
 """
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class LoginRequest(BaseModel):
     """Login request schema (for documentation)"""
-    username: str = Field(..., min_length=3, description="Username")
-    password: str = Field(..., min_length=6, description="Password")
+    username: str | None = Field(None)
+    password: str | None = Field(None, description="Password")
+
+    @field_validator("username", "password", mode="before")
+    @classmethod
+    def not_empty(cls, v, field):
+        if v is None or v == "":
+            raise ValueError(f"{field.name} must be provided")
+        return v
 
     class Config:
         json_schema_extra = {
